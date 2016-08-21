@@ -4,6 +4,8 @@ import org.junit.Assert._
 import org.junit.{Rule, Test}
 import org.junit.rules.ExpectedException
 
+import scala.collection.mutable
+
 /**
   * Created by andrew on 21/08/2016.
   */
@@ -23,7 +25,7 @@ class BridgeTreeTest {
 
   @Test
   def GenerateHandsFromDeckShouldGiveFourEqualHands(): Unit = {
-    val cardSeq = List[Card](
+    val cardSeq = mutable.LinkedHashSet[Card](
       Card(Suit.C, Pip.Three),
       Card(Suit.D, Pip.Five),
       Card(Suit.C, Pip.Jack),
@@ -34,9 +36,9 @@ class BridgeTreeTest {
       Card(Suit.C, Pip.Queen),
       Card(Suit.S, Pip.Three)
     )
-    val bridgeTree = new BridgeTree(new Deck(cardSeq), cardsPerHand = 2)
+    val bridgeTree = new BridgeTree(cardSeq)
 
-    val hands = bridgeTree.generateHandsFromDeck
+    val hands = bridgeTree.generateHandsFromDeck(cardSeq)
     assertEquals(4, hands.size)
     assertEquals(Card(Suit.C, Pip.Three), hands(Player.North).head)
     assertEquals(2, hands(Player.North).size)
@@ -44,7 +46,8 @@ class BridgeTreeTest {
 
   @Test
   def TrickWinnerShouldReturnCorrectInSameSuit(): Unit = {
-    val bridgeTree = new BridgeTree(new Deck, cardsPerHand = 2)
+    val cards = new mutable.LinkedHashSet[Card]()
+    val bridgeTree = new BridgeTree(cards)
     val trick = List[Card](
       Card(Suit.C, Pip.Ace),
       Card(Suit.C, Pip.Two),
@@ -56,7 +59,8 @@ class BridgeTreeTest {
 
   @Test
   def TrickWinnerShouldReturnCorrectInDifferentSuitsWithTrumps(): Unit = {
-    val bridgeTree = new BridgeTree(new Deck, cardsPerHand = 2, Suit.S)
+    val cards = new mutable.LinkedHashSet[Card]()
+    val bridgeTree = new BridgeTree(cards,Suit.S)
     val trick = List[Card](
       Card(Suit.C, Pip.Three),
       Card(Suit.D, Pip.Five),
@@ -68,7 +72,8 @@ class BridgeTreeTest {
 
   @Test
   def TrickWinnerShouldReturnCorrectInDifferentSuitsInNoTrumps(): Unit = {
-    val bridgeTree = new BridgeTree(new Deck, cardsPerHand = 2)
+    val cards = new mutable.LinkedHashSet[Card]()
+    val bridgeTree = new BridgeTree(cards)
     val trick = List[Card](
       Card(Suit.C, Pip.Three),
       Card(Suit.D, Pip.Five),
@@ -80,7 +85,8 @@ class BridgeTreeTest {
 
   @Test
   def ResultsCounterShouldCorrectlyStoreMinMaxWithOneTrick(): Unit = {
-    val bridgeTree = new BridgeTree(new Deck, cardsPerHand = 2)
+    val cards = new mutable.LinkedHashSet[Card]()
+    val bridgeTree = new BridgeTree(cards)
     val cardSeq = List[Card](
       Card(Suit.C, Pip.Three),
       Card(Suit.D, Pip.Five),
@@ -88,12 +94,13 @@ class BridgeTreeTest {
       Card(Suit.S, Pip.Four)
     )
     bridgeTree.ResultsCounter.storeResult(cardSeq)
-    assertEquals(1, bridgeTree.ResultsCounter.maxWay._2)
+    assertEquals(1, bridgeTree.ResultsCounter.ways.last.tricksWon)
   }
 
   @Test
   def ResultsCounterShouldCorrectlyStoreMinMaxWithThreeTricks(): Unit = {
-    val bridgeTree = new BridgeTree(new Deck, cardsPerHand = 2)
+    val cards = new mutable.LinkedHashSet[Card]()
+    val bridgeTree = new BridgeTree(cards)
     val cardSeq = List[Card](
       Card(Suit.C, Pip.Three), // N
       Card(Suit.D, Pip.Five), // E
@@ -111,12 +118,13 @@ class BridgeTreeTest {
       Card(Suit.D, Pip.Four) // S
     )
     bridgeTree.ResultsCounter.storeResult(cardSeq)
-    assertEquals(1, bridgeTree.ResultsCounter.maxWay._2) // 1 Trick won for N/S
+    assertEquals(1, bridgeTree.ResultsCounter.ways.last.tricksWon) // 1 Trick won for N/S
   }
 
   @Test
   def ResultsCounterShouldCorrectlyStoreMinMaxWithMultipleResultsOfThreeTricks(): Unit = {
-    val bridgeTree = new BridgeTree(new Deck, cardsPerHand = 2)
+    val cards = new mutable.LinkedHashSet[Card]()
+    val bridgeTree = new BridgeTree(cards)
     val cardSeq1 = List[Card](
       Card(Suit.C, Pip.Three), // N
       Card(Suit.D, Pip.Five), // E
@@ -152,13 +160,14 @@ class BridgeTreeTest {
     )
     bridgeTree.ResultsCounter.storeResult(cardSeq1)
     bridgeTree.ResultsCounter.storeResult(cardSeq2)
-    assertEquals(1, bridgeTree.ResultsCounter.minWay._2) // 1 Trick won for N/S
-    assertEquals(2, bridgeTree.ResultsCounter.maxWay._2) // 1 Trick won for N/S
+    assertEquals(1, bridgeTree.ResultsCounter.ways.head.tricksWon) // 1 Trick won for N/S
+    assertEquals(2, bridgeTree.ResultsCounter.ways.last.tricksWon) // 1 Trick won for N/S
   }
 
   @Test
   def ResultsCounterShouldCorrectlyStoreMinMaxWithMultipleResultsOfThreeTricksTheOtherWayRound(): Unit = {
-    val bridgeTree = new BridgeTree(new Deck, cardsPerHand = 2)
+    val cards = new mutable.LinkedHashSet[Card]()
+    val bridgeTree = new BridgeTree(cards)
     val cardSeq1 = List[Card](
       Card(Suit.C, Pip.Three), // N
       Card(Suit.D, Pip.Five), // E
@@ -194,27 +203,27 @@ class BridgeTreeTest {
     )
     bridgeTree.ResultsCounter.storeResult(cardSeq2)
     bridgeTree.ResultsCounter.storeResult(cardSeq1)
-    assertEquals(1, bridgeTree.ResultsCounter.minWay._2) // 1 Trick won for N/S
-    assertEquals(2, bridgeTree.ResultsCounter.maxWay._2) // 1 Trick won for N/S
+    assertEquals(1, bridgeTree.ResultsCounter.ways.head.tricksWon) // 1 Trick won for N/S
+    assertEquals(2, bridgeTree.ResultsCounter.ways.last.tricksWon) // 1 Trick won for N/S
   }
 
   @Test
   def PlayingARoundOfOneCardEachShouldLeadToExpectedMinMaxTrickCount(): Unit = {
-    val startingDeck = List[Card](
+    val startingDeck = mutable.LinkedHashSet[Card](
       Card(Suit.C, Pip.Three),
       Card(Suit.D, Pip.Five),
       Card(Suit.C, Pip.Jack),
       Card(Suit.S, Pip.Four)
     )
-    val bridgeTree = new BridgeTree(new Deck(startingDeck), cardsPerHand = 1)
+    val bridgeTree = new BridgeTree(startingDeck)
     bridgeTree.Play()
-    assertEquals(1, bridgeTree.ResultsCounter.minWay._2)
-    assertEquals(1, bridgeTree.ResultsCounter.maxWay._2)
+    assertEquals(1, bridgeTree.ResultsCounter.ways.head.tricksWon)
+    assertEquals(1, bridgeTree.ResultsCounter.ways.last.tricksWon)
   }
 
   @Test
   def PlayingARoundOfTwoCardsEachShouldLeadToExpectedMinMaxTrickCount(): Unit = {
-    val startingDeck = List[Card](
+    val startingDeck = mutable.LinkedHashSet[Card](
       Card(Suit.C, Pip.Three),
       Card(Suit.D, Pip.Five),
       Card(Suit.C, Pip.Jack),
@@ -225,10 +234,10 @@ class BridgeTreeTest {
       Card(Suit.C, Pip.Queen),
       Card(Suit.S, Pip.Three)
     )
-    val bridgeTree = new BridgeTree(new Deck(startingDeck), cardsPerHand = 2)
+    val bridgeTree = new BridgeTree(startingDeck)
     bridgeTree.Play()
-    assertEquals(1, bridgeTree.ResultsCounter.minWay._2)
-    assertEquals(2, bridgeTree.ResultsCounter.maxWay._2)
+    assertEquals(1, bridgeTree.ResultsCounter.ways.head.tricksWon)
+    assertEquals(2, bridgeTree.ResultsCounter.ways.last.tricksWon)
   }
 
 }

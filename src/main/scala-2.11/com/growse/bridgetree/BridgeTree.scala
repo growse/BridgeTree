@@ -4,27 +4,30 @@ import com.growse.bridgetree.Player.Player
 import com.growse.bridgetree.Suit.Suit
 import com.typesafe.scalalogging.LazyLogging
 
+import scala.collection.immutable.TreeSet
 import scala.collection.mutable.ListBuffer
 import scala.collection.{SortedSet, mutable}
 
 
-class BridgeTree(deck: Deck, cardsPerHand: Int = 1, trumpSuit: Suit = null) extends LazyLogging {
-  if (deck == null) {
+class BridgeTree(cards: mutable.LinkedHashSet[Card], trumpSuit: Suit = null) extends LazyLogging {
+  if (cards == null) {
     throw new IllegalArgumentException("Deck should not be null")
   }
 
+  val cardsPerHand = cards.size / Player.values.size
+
   def Play() = {
-    val hands: mutable.Map[Player, SortedSet[Card]] = generateHandsFromDeck
+    val hands: mutable.Map[Player, SortedSet[Card]] = generateHandsFromDeck(cards)
 
     val startingState = new ListBuffer[Card]
     PlayCard(startingState, hands, Player.North, recursionLevel = 0)
   }
 
-  def generateHandsFromDeck: mutable.Map[Player, SortedSet[Card]] = {
+  def generateHandsFromDeck(cards: mutable.LinkedHashSet[Card]): mutable.Map[Player, SortedSet[Card]] = {
     val hands = mutable.Map[Player, SortedSet[Card]]()
     for (i <- Player.values) {
-      val hand = deck.cards.slice(i.id * cardsPerHand, (i.id + 1) * cardsPerHand)
-      hands(i) = collection.SortedSet(hand: _*)
+      val hand = cards.slice(i.id * cardsPerHand, (i.id + 1) * cardsPerHand)
+      hands(i) = collection.SortedSet(hand.toList: _*)
       logger.debug(s"Player $i has hand: ${hands(i)}")
     }
     hands
@@ -80,23 +83,34 @@ class BridgeTree(deck: Deck, cardsPerHand: Int = 1, trumpSuit: Suit = null) exte
     }
   }
 
+  case class PlayOrder(cards: Seq[Card], tricksWon: Int) extends Ordered[PlayOrder] {
+    override def toString: String = {
+      val stringBuilder: StringBuilder = new StringBuilder
+      stringBuilder.append(s"Tricks won: $tricksWon.\n")
+      var player = Player.North
+      cards.zipWithIndex.foreach(card => {
+        stringBuilder.append(s"$player plays ${card._1}\n")
+        player = Player.NextPlayer(player)
+        if ((card._2 + 1) % 4 == 0) {
+          val lastTrickWinner = TrickWinner(cards.slice(card._2 - 3, card._2 + 1))
+          player = Player((player.id + lastTrickWinner) % 4)
+          stringBuilder.append(s"$player wins\n")
+        }
+      })
+      stringBuilder.toString()
+    }
+
+    override def compare(that: PlayOrder): Int = {
+      this.tricksWon.compare(that.tricksWon)
+    }
+  }
+
   object ResultsCounter {
-    var minWay: (Seq[Card], Int) = _
-    var maxWay: (Seq[Card], Int) = _
+    var ways: TreeSet[PlayOrder] = TreeSet[PlayOrder]()
 
     def storeResult(playSeq: Seq[Card]): Unit = {
       val leadTricksWon = calculateLeadTricksWon(playSeq)
-      if (minWay == null && maxWay == null) {
-        minWay = (playSeq, leadTricksWon)
-        maxWay = (playSeq, leadTricksWon)
-      } else {
-        if (leadTricksWon < minWay._2) {
-          minWay = (playSeq, leadTricksWon)
-        }
-        if (leadTricksWon > maxWay._2) {
-          maxWay = (playSeq, leadTricksWon)
-        }
-      }
+      ways.+=(PlayOrder(playSeq, leadTricksWon))
     }
 
     def calculateLeadTricksWon(playSeq: Seq[Card]): Int = {

@@ -12,6 +12,11 @@ class RunnerTest {
     Runner.main(Array[String]("BLAH", "TwoH,AceS,ThreeD,JackC"))
   }
 
+  @Test
+  def RunnerShouldWorkWithSpecifiedHandCount(): Unit = {
+    Runner.main(Array[String]("S", "3"))
+  }
+
   val _exception = ExpectedException.none()
 
   @Rule
