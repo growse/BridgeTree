@@ -67,16 +67,4 @@ class CardsDecksAndPlayersTest {
     assertEquals(4, deck._1.size)
     assertEquals(48, deck._2.cards.size)
   }
-
-  @Test
-  def DeckToStringShouldProduceCorrectString(): Unit = {
-    val cardSeq = List[Card](
-      Card(Suit.C, Pip.Three),
-      Card(Suit.D, Pip.Five),
-      Card(Suit.C, Pip.Jack),
-      Card(Suit.S, Pip.Four)
-    )
-    val deck = new Deck(cardSeq)
-    assertEquals("Deck: ThreeC, FiveD, JackC, FourS", deck.toString())
-  }
 }

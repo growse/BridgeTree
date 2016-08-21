@@ -46,11 +46,7 @@ object Player extends Enumeration {
   }
 }
 
-class Deck(val cards: List[Card]) {
-  if (cards.toSet.size != cards.size) {
-    throw new IllegalArgumentException("Given deck must not contain duplicates")
-  }
-
+class Deck private (val cards: List[Card]) {
   def this() = this(
     for {
       s <- Suit.values.toList
@@ -70,6 +66,4 @@ class Deck(val cards: List[Card]) {
     }
     loop(n, Seq(), this)
   }
-
-  override def toString: String = "Deck: " + (cards mkString ", ")
 }
