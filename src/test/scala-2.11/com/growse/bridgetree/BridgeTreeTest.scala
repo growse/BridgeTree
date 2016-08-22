@@ -4,6 +4,7 @@ import org.junit.Assert._
 import org.junit.{Rule, Test}
 import org.junit.rules.ExpectedException
 
+import scala.collection.immutable.TreeSet
 import scala.collection.mutable
 
 /**
@@ -26,22 +27,23 @@ class BridgeTreeTest {
   @Test
   def GenerateHandsFromDeckShouldGiveFourEqualHands(): Unit = {
     val cardSeq = mutable.LinkedHashSet[Card](
-      Card(Suit.C, Pip.Three),
-      Card(Suit.D, Pip.Five),
-      Card(Suit.C, Pip.Jack),
-      Card(Suit.S, Pip.Four),
+      Card(Suit.C, Pip.Three), // N
+      Card(Suit.D, Pip.Five), // N
 
-      Card(Suit.S, Pip.King),
-      Card(Suit.S, Pip.Ace),
-      Card(Suit.C, Pip.Queen),
-      Card(Suit.S, Pip.Three)
+      Card(Suit.C, Pip.Jack), // E
+      Card(Suit.S, Pip.Four), // E
+
+      Card(Suit.S, Pip.King), // S
+      Card(Suit.S, Pip.Ace), // S
+
+      Card(Suit.C, Pip.Queen), // W
+      Card(Suit.S, Pip.Three) // W
     )
     val bridgeTree = new BridgeTree(cardSeq)
 
     val hands = bridgeTree.generateHandsFromDeck(cardSeq)
     assertEquals(4, hands.size)
-    assertEquals(Card(Suit.C, Pip.Three), hands(Player.North).head)
-    assertEquals(2, hands(Player.North).size)
+    assertEquals(TreeSet(Card(Suit.C, Pip.Three), Card(Suit.D, Pip.Five)), hands(Player.North))
   }
 
   @Test
@@ -54,20 +56,20 @@ class BridgeTreeTest {
       Card(Suit.C, Pip.Three),
       Card(Suit.C, Pip.Four)
     )
-    assertEquals(0, bridgeTree.TrickWinner(trick))
+    assertEquals(0, bridgeTree.TrickWinner(trick, null))
   }
 
   @Test
   def TrickWinnerShouldReturnCorrectInDifferentSuitsWithTrumps(): Unit = {
     val cards = new mutable.LinkedHashSet[Card]()
-    val bridgeTree = new BridgeTree(cards,Suit.S)
+    val bridgeTree = new BridgeTree(cards, Suit.S)
     val trick = List[Card](
       Card(Suit.C, Pip.Three),
       Card(Suit.D, Pip.Five),
       Card(Suit.C, Pip.Jack),
       Card(Suit.S, Pip.Four)
     )
-    assertEquals(3, bridgeTree.TrickWinner(trick))
+    assertEquals(3, bridgeTree.TrickWinner(trick, Suit.S))
   }
 
   @Test
@@ -80,7 +82,7 @@ class BridgeTreeTest {
       Card(Suit.C, Pip.Jack),
       Card(Suit.S, Pip.Four)
     )
-    assertEquals(2, bridgeTree.TrickWinner(trick))
+    assertEquals(2, bridgeTree.TrickWinner(trick, null))
   }
 
   @Test
