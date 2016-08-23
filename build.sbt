@@ -11,6 +11,9 @@ libraryDependencies += "junit" % "junit" % "4.12"
 libraryDependencies += "org.apache.commons" % "commons-lang3" % "3.4"
 libraryDependencies += "org.rogach" %% "scallop" % "2.0.1"
 
+libraryDependencies += "org.apache.maven.surefire" % "surefire-junit4" % "2.19.1"
+
+
 
 testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v")
 
