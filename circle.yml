@@ -1,0 +1,3 @@
+test:
+  post:
+    - cp target/test-reports/*.xml $CIRCLE_TEST_REPORTS
