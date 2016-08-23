@@ -1,4 +1,7 @@
 test:
+  override:
+    - sbt clean coverage test coverageReport
   post:
+    - cp target/scala-2.*/scoverage-report $CIRCLE_ARTIFACTS/
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/target/test-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
