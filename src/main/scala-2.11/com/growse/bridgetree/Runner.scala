@@ -5,7 +5,7 @@ import com.growse.bridgetree.Suit.Suit
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.commons.lang3.time.StopWatch
 import org.rogach.scallop.ArgType.V
-import org.rogach.scallop.{ScallopConf, ValueConverter}
+import org.rogach.scallop.{ScallopConf, ScallopOption, ValueConverter}
 import org.slf4j.LoggerFactory
 
 class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
@@ -37,8 +37,6 @@ class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
 object Runner extends LazyLogging {
 
   def main(args: Array[String]): Unit = {
-
-
     val conf = new Conf(args)
 
     if (conf.verbose.getOrElse(false)) {
@@ -60,16 +58,20 @@ object Runner extends LazyLogging {
         }
       }
     } else {
+      // The whole deck! This may take a while
       cards.++=(new Deck().shuffle.cards)
     }
 
     val cardsPerHand = cards.size / 4
     logger.info(s"Initial Deck is $cards")
+
     logger.info(s"Trick count: $cardsPerHand")
+
     logger.info(s"Trumps are ${conf.trumpsuit.getOrElse(null)}")
 
     val bridgeTree = new BridgeTree(cards, conf.trumpsuit.getOrElse(null))
 
+    logger.info(s"${bridgeTree.generateHandsFromDeck(cards)}")
     val stopWatch = new StopWatch()
     stopWatch.start()
     bridgeTree.Play()
@@ -77,8 +79,8 @@ object Runner extends LazyLogging {
 
     logger.info(s"Worst result for lead: ${bridgeTree.ResultsCounter.ways.head}")
     logger.info(s"Best result for lead: ${bridgeTree.ResultsCounter.ways.last}")
+
     logger.info(s"Legal play count: ${bridgeTree.ResultsCounter.ways.size}")
     logger.info(s"Done in $stopWatch")
   }
-
 }
