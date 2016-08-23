@@ -9,12 +9,12 @@ import org.junit.rules.ExpectedException
 class RunnerTest {
   @Test
   def RunnerShouldWorkWithSuppliedDeck(): Unit = {
-    Runner.main(Array[String]("BLAH", "TwoH,AceS,ThreeD,JackC"))
+    Runner.main(Array[String]("--trumpsuit", "S", "--cards", "TwoH,AceS,ThreeD,JackC"))
   }
 
   @Test
   def RunnerShouldWorkWithSpecifiedHandCount(): Unit = {
-    Runner.main(Array[String]("S", "3"))
+    Runner.main(Array[String]("--trumpsuit", "S", "--trickcount", "3"))
   }
 
   val _exception = ExpectedException.none()
@@ -25,6 +25,6 @@ class RunnerTest {
   @Test
   def RunnerShouldFailWithSuppliedDeckNotHavingMultipleOfFourCards(): Unit = {
     exception.expect(classOf[IllegalArgumentException])
-    Runner.main(Array[String]("Blah", "TwoH,AceS, ThreeD,JackC,AceH"))
+    Runner.main(Array[String]("--trumpsuit", "Blah", "--cards", "TwoH,AceS, ThreeD,JackC,AceH"))
   }
 }
