@@ -77,8 +77,8 @@ object Runner extends LazyLogging {
     bridgeTree.Play()
     stopWatch.stop()
 
-    logger.info(s"Worst result for lead: ${bridgeTree.ResultsCounter.ways.head}")
-    logger.info(s"Best result for lead: ${bridgeTree.ResultsCounter.ways.last}")
+    logger.info(s"Worst result for lead: ${bridgeTree.ResultsCounter.ways.head.toString}")
+    logger.info(s"Best result for lead: ${bridgeTree.ResultsCounter.ways.last.toString}")
 
     logger.info(s"Legal play count: ${bridgeTree.ResultsCounter.ways.size}")
     logger.info(s"Done in $stopWatch")

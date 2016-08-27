@@ -4,10 +4,8 @@ import com.growse.bridgetree.Player.Player
 import com.growse.bridgetree.Suit.Suit
 import com.typesafe.scalalogging.LazyLogging
 
-import scala.collection.immutable.TreeSet
-import scala.collection.mutable.ListBuffer
 import scala.collection.{SortedSet, mutable}
-
+import WHAT._
 
 class BridgeTree(cards: mutable.LinkedHashSet[Card], trumpetySuit: Suit = null) extends LazyLogging {
   if (cards == null) {
@@ -16,17 +14,18 @@ class BridgeTree(cards: mutable.LinkedHashSet[Card], trumpetySuit: Suit = null) 
 
   val cardsPerHand = cards.size / Player.values.size
 
-  /***
+  /** *
     * Generate the hands from the deck and kick off the initial play
     */
   def Play() = {
     val hands: mutable.Map[Player, SortedSet[Card]] = generateHandsFromDeck(cards)
 
-    val startingState = new ListBuffer[Card]
+    val startingState: List[Card] = List()
+    startingState.setTrumpSuit(trumpetySuit)
     PlayCard(startingState, hands, Player.North, recursionLevel = 0)
   }
 
-  /***
+  /** *
     * Given a set of cards, generate a map of Players / Hands
     *
     * @param cards
@@ -42,42 +41,21 @@ class BridgeTree(cards: mutable.LinkedHashSet[Card], trumpetySuit: Suit = null) 
     hands
   }
 
-  /***
-    * Given a sequence of 4 cards, work out which play index (0-3) won the trick
-    *
-    * @param cards
-    * @return
-    */
-  def TrickWinner(cards: Seq[Card], trumpSuit: Suit): Int = {
-    assert(cards.size == 4)
-    val winningcard = cards.reduceLeft { (prevWinner, cur) => {
-      if (cur.suit == prevWinner.suit && cur > prevWinner) {
-        cur
-      } else {
-        if (trumpSuit != null && cur.suit == trumpSuit && prevWinner.suit != trumpSuit) {
-          cur
-        } else {
-          prevWinner
-        }
-      }
-    }
-    }
-    cards.indexOf(winningcard)
-  }
 
-  /***
+  /** *
     * For a given state of played cards, a list of cards players have in their hands and a player to play next,
     * play a card from the player's hand and then recurse.
-    * @param currentState - A list of cards that have already been played
-    * @param hands - A map of each hand remaining for each player
-    * @param playerToPlay - The player to play next
+    *
+    * @param currentState   - A list of cards that have already been played
+    * @param hands          - A map of each hand remaining for each player
+    * @param playerToPlay   - The player to play next
     * @param recursionLevel - What depth we're at
     */
-  def PlayCard(currentState: Seq[Card], hands: mutable.Map[Player, SortedSet[Card]], playerToPlay: Player, recursionLevel: Int): Unit = {
+  def PlayCard(currentState: List[Card], hands: mutable.Map[Player, SortedSet[Card]], playerToPlay: Player, recursionLevel: Int): Unit = {
     var actualPlayerToPlay = playerToPlay
     // Work out if were starting a new trick and if so, who won the last one.
     if (currentState.size % 4 == 0 && currentState.nonEmpty) {
-      actualPlayerToPlay = Player((playerToPlay.id + TrickWinner(currentState.takeRight(4), trumpetySuit)) % 4)
+      actualPlayerToPlay = Player((playerToPlay.id + currentState.takeRight(4).getTrickWinner(trumpetySuit)) % 4)
       logger.debug(s"Looks like Player $actualPlayerToPlay won the last trick: ${currentState.takeRight(4)}")
     }
     //logger.debug(s"currentState: $currentState. Player to play: $actualPlayerToPlay")
@@ -101,63 +79,32 @@ class BridgeTree(cards: mutable.LinkedHashSet[Card], trumpetySuit: Suit = null) 
       })
     } else {
       assert(currentState.size == cardsPerHand * Player.values.size)
-      logger.info(s"Final PlaySeq: $currentState. Lead won ${ResultsCounter.calculateLeadTricksWon(currentState)}")
+
+      logger.info(s"Final PlaySeq: $currentState. Lead won ${currentState.getLeadTricksWon}")
       ResultsCounter.storeResult(currentState)
     }
   }
 
-  /***
-    * Represents a list of cards in the order they were played
-    * @param cards
-    * @param tricksWon
-    */
-  case class PlayOrder(cards: Seq[Card], tricksWon: Int) extends Ordered[PlayOrder] {
-    override def toString: String = {
-      val stringBuilder: StringBuilder = new StringBuilder
-      stringBuilder.append(s"Tricks won: $tricksWon.\n")
-      var player = Player.North
-      cards.zipWithIndex.foreach(card => {
-        stringBuilder.append(s"$player plays ${card._1}\n")
-        player = Player.NextPlayer(player)
-        if ((card._2 + 1) % 4 == 0) {
-          val lastTrickWinner = TrickWinner(cards.slice(card._2 - 3, card._2 + 1), trumpetySuit)
-          player = Player((player.id + lastTrickWinner) % 4)
-          stringBuilder.append(s"$player wins\n")
-        }
-      })
-      stringBuilder.toString()
-    }
-
-    override def compare(that: PlayOrder): Int = {
-      this.tricksWon.compare(that.tricksWon)
-    }
-  }
-
-  /***
+  /** *
     * Maintains a collection of all the different ways that have been played.
     */
   object ResultsCounter {
-    var ways: TreeSet[PlayOrder] = TreeSet[PlayOrder]()
+    var ways: mutable.TreeSet[PlayOrder] = mutable.TreeSet[PlayOrder]()
 
-    def storeResult(playSeq: Seq[Card]): Unit = {
-      val leadTricksWon = calculateLeadTricksWon(playSeq)
-      ways.+=(PlayOrder(playSeq, leadTricksWon))
-    }
-
-    def calculateLeadTricksWon(playSeq: Seq[Card]): Int = {
-      val trickswon = Array(0, 0)
-      var lastWinner = 0
-      for (i <- playSeq.indices by 4) {
-        val winnerIndex = TrickWinner(playSeq.slice(i, i + 4),trumpetySuit)
-        val actualWinner = (lastWinner + winnerIndex) % 4
-        trickswon(actualWinner % 2) += 1
-        lastWinner = actualWinner
-      }
-      trickswon(0)
+    /** *
+      * Persist the given PlayOrder into the Tree
+      *
+      * @param playSeq
+      */
+    def storeResult(playSeq: List[Card]): Unit = {
+      logger.info(s"storing a playseq. Now have ${ways.size}")
+      ways.+=(playSeq)
     }
   }
 
 }
 
-
+package object WHAT {
+  implicit def enhanceCardList(t: List[Card]): PlayOrder = new PlayOrder(t)
+}
 

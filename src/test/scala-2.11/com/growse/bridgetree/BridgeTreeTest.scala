@@ -3,7 +3,7 @@ package com.growse.bridgetree
 import org.junit.Assert._
 import org.junit.{Rule, Test}
 import org.junit.rules.ExpectedException
-
+import WHAT._
 import scala.collection.immutable.TreeSet
 import scala.collection.mutable
 
@@ -49,40 +49,35 @@ class BridgeTreeTest {
   @Test
   def TrickWinnerShouldReturnCorrectInSameSuit(): Unit = {
     val cards = new mutable.LinkedHashSet[Card]()
-    val bridgeTree = new BridgeTree(cards)
     val trick = List[Card](
       Card(Suit.C, Pip.Ace),
       Card(Suit.C, Pip.Two),
       Card(Suit.C, Pip.Three),
       Card(Suit.C, Pip.Four)
     )
-    assertEquals(0, bridgeTree.TrickWinner(trick, null))
+    assertEquals(0, trick.getTrickWinner(null))
   }
 
   @Test
   def TrickWinnerShouldReturnCorrectInDifferentSuitsWithTrumps(): Unit = {
-    val cards = new mutable.LinkedHashSet[Card]()
-    val bridgeTree = new BridgeTree(cards, Suit.S)
     val trick = List[Card](
       Card(Suit.C, Pip.Three),
       Card(Suit.D, Pip.Five),
       Card(Suit.C, Pip.Jack),
       Card(Suit.S, Pip.Four)
     )
-    assertEquals(3, bridgeTree.TrickWinner(trick, Suit.S))
+    assertEquals(3, trick.getTrickWinner(Suit.S))
   }
 
   @Test
   def TrickWinnerShouldReturnCorrectInDifferentSuitsInNoTrumps(): Unit = {
-    val cards = new mutable.LinkedHashSet[Card]()
-    val bridgeTree = new BridgeTree(cards)
     val trick = List[Card](
       Card(Suit.C, Pip.Three),
       Card(Suit.D, Pip.Five),
       Card(Suit.C, Pip.Jack),
       Card(Suit.S, Pip.Four)
     )
-    assertEquals(2, bridgeTree.TrickWinner(trick, null))
+    assertEquals(2, trick.getTrickWinner(null))
   }
 
   @Test
@@ -96,7 +91,7 @@ class BridgeTreeTest {
       Card(Suit.S, Pip.Four)
     )
     bridgeTree.ResultsCounter.storeResult(cardSeq)
-    assertEquals(1, bridgeTree.ResultsCounter.ways.last.tricksWon)
+    assertEquals(1, bridgeTree.ResultsCounter.ways.last.getLeadTricksWon)
   }
 
   @Test
@@ -120,7 +115,7 @@ class BridgeTreeTest {
       Card(Suit.D, Pip.Four) // S
     )
     bridgeTree.ResultsCounter.storeResult(cardSeq)
-    assertEquals(1, bridgeTree.ResultsCounter.ways.last.tricksWon) // 1 Trick won for N/S
+    assertEquals(1, bridgeTree.ResultsCounter.ways.last.getLeadTricksWon) // 1 Trick won for N/S
   }
 
   @Test
@@ -162,8 +157,8 @@ class BridgeTreeTest {
     )
     bridgeTree.ResultsCounter.storeResult(cardSeq1)
     bridgeTree.ResultsCounter.storeResult(cardSeq2)
-    assertEquals(1, bridgeTree.ResultsCounter.ways.head.tricksWon) // 1 Trick won for N/S
-    assertEquals(2, bridgeTree.ResultsCounter.ways.last.tricksWon) // 1 Trick won for N/S
+    assertEquals(1, bridgeTree.ResultsCounter.ways.head.getLeadTricksWon) // 1 Trick won for N/S
+    assertEquals(2, bridgeTree.ResultsCounter.ways.last.getLeadTricksWon) // 1 Trick won for N/S
   }
 
   @Test
@@ -205,8 +200,10 @@ class BridgeTreeTest {
     )
     bridgeTree.ResultsCounter.storeResult(cardSeq2)
     bridgeTree.ResultsCounter.storeResult(cardSeq1)
-    assertEquals(1, bridgeTree.ResultsCounter.ways.head.tricksWon) // 1 Trick won for N/S
-    assertEquals(2, bridgeTree.ResultsCounter.ways.last.tricksWon) // 1 Trick won for N/S
+
+    assertEquals(1, bridgeTree.ResultsCounter.ways.head.getLeadTricksWon) // 1 Trick won for N/S
+    assertEquals(2, bridgeTree.ResultsCounter.ways.last.getLeadTricksWon) // 1 Trick won for N/S
+
   }
 
   @Test
@@ -219,8 +216,9 @@ class BridgeTreeTest {
     )
     val bridgeTree = new BridgeTree(startingDeck)
     bridgeTree.Play()
-    assertEquals(1, bridgeTree.ResultsCounter.ways.head.tricksWon)
-    assertEquals(1, bridgeTree.ResultsCounter.ways.last.tricksWon)
+
+    assertEquals(1, bridgeTree.ResultsCounter.ways.head.getLeadTricksWon)
+    assertEquals(1, bridgeTree.ResultsCounter.ways.last.getLeadTricksWon)
   }
 
   @Test
@@ -238,8 +236,9 @@ class BridgeTreeTest {
     )
     val bridgeTree = new BridgeTree(startingDeck)
     bridgeTree.Play()
-    assertEquals(1, bridgeTree.ResultsCounter.ways.head.tricksWon)
-    assertEquals(2, bridgeTree.ResultsCounter.ways.last.tricksWon)
+
+    assertEquals(1, bridgeTree.ResultsCounter.ways.head.getLeadTricksWon)
+    assertEquals(2, bridgeTree.ResultsCounter.ways.last.getLeadTricksWon)
   }
 
 }
