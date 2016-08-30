@@ -2,10 +2,10 @@ package com.growse.bridgetree
 
 import com.growse.bridgetree.Player.Player
 import com.growse.bridgetree.Suit.Suit
+import com.growse.bridgetree.WHAT._
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.collection.{SortedSet, mutable}
-import WHAT._
 
 class BridgeTree(cards: mutable.LinkedHashSet[Card], trumpetySuit: Suit = null) extends LazyLogging {
   if (cards == null) {
@@ -22,7 +22,8 @@ class BridgeTree(cards: mutable.LinkedHashSet[Card], trumpetySuit: Suit = null) 
 
     val startingState: List[Card] = List()
     startingState.setTrumpSuit(trumpetySuit)
-    PlayCard(startingState, hands, Player.North, recursionLevel = 0)
+    val rootTrieNode = new BridgeTrieNode()
+    PlayCard(startingState, hands, Player.North, recursionLevel = 0, rootTrieNode)
   }
 
   /** *
@@ -51,7 +52,7 @@ class BridgeTree(cards: mutable.LinkedHashSet[Card], trumpetySuit: Suit = null) 
     * @param playerToPlay   - The player to play next
     * @param recursionLevel - What depth we're at
     */
-  def PlayCard(currentState: List[Card], hands: mutable.Map[Player, SortedSet[Card]], playerToPlay: Player, recursionLevel: Int): Unit = {
+  def PlayCard(currentState: List[Card], hands: mutable.Map[Player, SortedSet[Card]], playerToPlay: Player, recursionLevel: Int, parentTrieNode: BridgeTrieNode): Unit = {
     var actualPlayerToPlay = playerToPlay
     // Work out if were starting a new trick and if so, who won the last one.
     if (currentState.size % 4 == 0 && currentState.nonEmpty) {
@@ -71,8 +72,11 @@ class BridgeTree(cards: mutable.LinkedHashSet[Card], trumpetySuit: Suit = null) 
           logger.debug(s"Player $actualPlayerToPlay plays $card")
           val newHands = hands.clone()
           newHands(actualPlayerToPlay) = hands(actualPlayerToPlay).-(card)
+          val trieNode = new BridgeTrieNode(Some(card), Some(parentTrieNode))
 
-          PlayCard(currentState :+ card, newHands, Player.NextPlayer(actualPlayerToPlay), recursionLevel + 1)
+          parentTrieNode.children.+=(trieNode)
+
+          PlayCard(currentState :+ card, newHands, Player.NextPlayer(actualPlayerToPlay), recursionLevel + 1, trieNode)
         } else {
           logger.debug(s"Player $actualPlayerToPlay cannot play $card")
         }

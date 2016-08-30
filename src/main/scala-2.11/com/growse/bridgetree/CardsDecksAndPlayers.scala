@@ -73,6 +73,10 @@ class PlayOrder(self: List[Card]) extends Ordered[PlayOrder] {
   override def toString: String = self.toString()
   var trumpSuit: Suit = _
 
+  /***
+    * Set a
+    * @param trumpSuit
+    */
   def setTrumpSuit(trumpSuit: Suit) = {
     this.trumpSuit = trumpSuit
   }
@@ -81,6 +85,10 @@ class PlayOrder(self: List[Card]) extends Ordered[PlayOrder] {
     self
   }
 
+  /***
+    * Render a list of what was played by whom
+    * @return
+    */
   def printFullPlay: String = {
     val stringBuilder: StringBuilder = new StringBuilder
     stringBuilder.append(s"Tricks won: $getLeadTricksWon.\n")
@@ -97,6 +105,10 @@ class PlayOrder(self: List[Card]) extends Ordered[PlayOrder] {
     stringBuilder.toString()
   }
 
+  /***
+    * For a list of cards, calculate the number of tricks won by the N/S partnership
+    * @return
+    */
   def getLeadTricksWon: Int = {
     val trickswon = Array(0, 0)
     var lastWinner = 0

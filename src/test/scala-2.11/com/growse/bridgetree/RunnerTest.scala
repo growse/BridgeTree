@@ -25,6 +25,6 @@ class RunnerTest {
   @Test
   def RunnerShouldFailWithSuppliedDeckNotHavingMultipleOfFourCards(): Unit = {
     exception.expect(classOf[IllegalArgumentException])
-    Runner.main(Array[String]("--trumpsuit", "Blah", "--cards", "TwoH,AceS, ThreeD,JackC,AceH"))
+    Runner.main(Array[String]("--trumpsuit", "Blah", "--cards", "TwoH,AceS,ThreeD,JackC,AceH"))
   }
 }

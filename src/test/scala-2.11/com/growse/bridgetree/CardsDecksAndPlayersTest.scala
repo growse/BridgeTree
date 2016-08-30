@@ -11,7 +11,7 @@ import org.junit.rules.ExpectedException
 class CardsDecksAndPlayersTest {
 
   @Test
-  def TwoPlayOrdersThatAreTheSameShouldBeTheSame: Unit = {
+  def TwoPlayOrdersThatAreTheSameShouldBeTheSame(): Unit = {
     val list1 = List(
       Card(Suit.C, Pip.Three),
       Card(Suit.D, Pip.Five),
@@ -29,7 +29,7 @@ class CardsDecksAndPlayersTest {
   }
 
   @Test
-  def TwoPlayOrdersThatAreDifferentShouldBeDifferentBecauseTricksAreDifferent: Unit = {
+  def TwoPlayOrdersThatAreDifferentShouldBeDifferentBecauseTricksAreDifferent(): Unit = {
     val list1 = List(
       Card(Suit.C, Pip.Three),
       Card(Suit.D, Pip.Five),
@@ -42,12 +42,13 @@ class CardsDecksAndPlayersTest {
       Card(Suit.C, Pip.Jack),
       Card(Suit.S, Pip.Four)
     )
-    assertEquals(1,list1.getLeadTricksWon)
-    assertEquals(0,list2.getLeadTricksWon)
-    assert(list1>list2)
+    assertEquals(1, list1.getLeadTricksWon)
+    assertEquals(0, list2.getLeadTricksWon)
+    assert(list1 > list2)
   }
+
   @Test
-  def TwoPlayOrdersThatAreDifferentShouldBeDifferentBecauseTricksAreSameButCardsAreDifferent: Unit = {
+  def TwoPlayOrdersThatAreDifferentShouldBeDifferentBecauseTricksAreSameButCardsAreDifferent(): Unit = {
     val list1 = List(
       Card(Suit.C, Pip.Three),
       Card(Suit.D, Pip.Five),
@@ -60,20 +61,20 @@ class CardsDecksAndPlayersTest {
       Card(Suit.S, Pip.Jack),
       Card(Suit.S, Pip.Four)
     )
-    assertEquals(1,list1.getLeadTricksWon)
-    assertEquals(1,list2.getLeadTricksWon)
-    assert(list1<list2)
+    assertEquals(1, list1.getLeadTricksWon)
+    assertEquals(1, list2.getLeadTricksWon)
+    assert(list1 < list2)
   }
 
   @Test
-  def PrintPlayOrderShouldPrintSomeStuff: Unit= {
+  def PrintPlayOrderShouldPrintSomeStuff(): Unit = {
     val list1 = List(
       Card(Suit.C, Pip.Three),
       Card(Suit.D, Pip.Five),
       Card(Suit.C, Pip.Jack),
       Card(Suit.S, Pip.Four)
     )
-    assertEquals(97,list1.printFullPlay.size) // It really is 97 bytes
+    assertEquals(97, list1.printFullPlay.length) // It really is 97 bytes
   }
 
   @Test
