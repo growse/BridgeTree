@@ -5,7 +5,6 @@ import com.growse.bridgetree.Suit.Suit
 
 import scala.annotation.tailrec
 import scala.util.Random
-import WHAT._
 
 /**
   * Created by andrew on 21/08/2016.
@@ -66,90 +65,5 @@ class Deck private(val cards: List[Card]) {
       }
     }
     loop(n, Seq(), this)
-  }
-}
-
-class PlayOrder(self: List[Card]) extends Ordered[PlayOrder] {
-  override def toString: String = self.toString()
-  var trumpSuit: Suit = _
-
-  /***
-    * Set a
-    * @param trumpSuit
-    */
-  def setTrumpSuit(trumpSuit: Suit) = {
-    this.trumpSuit = trumpSuit
-  }
-
-  def getCards: List[Card] = {
-    self
-  }
-
-  /***
-    * Render a list of what was played by whom
-    * @return
-    */
-  def printFullPlay: String = {
-    val stringBuilder: StringBuilder = new StringBuilder
-    stringBuilder.append(s"Tricks won: $getLeadTricksWon.\n")
-    var player = Player.North
-    self.zipWithIndex.foreach(card => {
-      stringBuilder.append(s"$player plays ${card._1}\n")
-      player = Player.NextPlayer(player)
-      if ((card._2 + 1) % 4 == 0) {
-        val lastTrickWinner = self.slice(card._2 - 3, card._2 + 1).getTrickWinner(trumpSuit)
-        player = Player((player.id + lastTrickWinner) % 4)
-        stringBuilder.append(s"$player wins\n")
-      }
-    })
-    stringBuilder.toString()
-  }
-
-  /***
-    * For a list of cards, calculate the number of tricks won by the N/S partnership
-    * @return
-    */
-  def getLeadTricksWon: Int = {
-    val trickswon = Array(0, 0)
-    var lastWinner = 0
-    for (i <- self.indices by 4) {
-      val winnerIndex = self.slice(i, i + 4).getTrickWinner(trumpSuit)
-      val actualWinner = (lastWinner + winnerIndex) % 4
-      trickswon(actualWinner % 2) += 1
-      lastWinner = actualWinner
-    }
-    trickswon(0)
-  }
-
-  /** *
-    * Given a sequence of 4 cards, work out which play index (0-3) won the trick
-    *
-    * @param trumpSuit
-    * @return
-    */
-  def getTrickWinner(trumpSuit: Suit): Int = {
-    assert(self.size == 4)
-    val winningcard = self.reduceLeft { (prevWinner, cur) => {
-      if (cur.suit == prevWinner.suit && cur > prevWinner) {
-        cur
-      } else {
-        if (trumpSuit != null && cur.suit == trumpSuit && prevWinner.suit != trumpSuit) {
-          cur
-        } else {
-          prevWinner
-        }
-      }
-    }
-    }
-    self.indexOf(winningcard)
-  }
-
-  override def compare(that: PlayOrder): Int = {
-    val trickCount = self.getLeadTricksWon.compare(that.getLeadTricksWon)
-    if (trickCount == 0) {
-      self.toString().compareTo(that.getCards.toString)
-    } else {
-      trickCount
-    }
   }
 }
