@@ -85,6 +85,49 @@ class BridgeTrieNodeTest {
   }
 
   @Test
+  def AppendingTwoSequencesOfCardsWithACommonPrefixShouldProduceASaneTrie(): Unit = {
+    val rootTrieNode = new BridgeTrieNode()
+    val cardSeq1 = List[Card](
+      Card(Suit.C, Pip.Three), // N
+      Card(Suit.D, Pip.Five), // E
+      Card(Suit.C, Pip.Jack), // S Win
+      Card(Suit.S, Pip.Four), // W
+
+      Card(Suit.S, Pip.King), // S
+      Card(Suit.S, Pip.Ace), // W Win
+      Card(Suit.C, Pip.Jack), // N
+      Card(Suit.S, Pip.Three), // E
+
+      Card(Suit.H, Pip.Three), // W
+      Card(Suit.H, Pip.Five), // N
+      Card(Suit.H, Pip.Jack), // E Win
+      Card(Suit.D, Pip.Four) // S
+    )
+    val cardSeq2 = List[Card](
+      Card(Suit.C, Pip.Three), // N
+      Card(Suit.D, Pip.Five), // E
+      Card(Suit.C, Pip.Jack), // S Win
+      Card(Suit.S, Pip.Four), // W
+
+      Card(Suit.S, Pip.King), // S
+      Card(Suit.S, Pip.Ace), // W Win
+      Card(Suit.C, Pip.Five), // N
+      Card(Suit.S, Pip.Three), // E
+
+      Card(Suit.H, Pip.Three), // W
+      Card(Suit.H, Pip.Five), // N
+      Card(Suit.H, Pip.Jack), // E Win
+      Card(Suit.D, Pip.Four) // S
+    )
+    rootTrieNode.appendCardList(cardSeq1)
+    rootTrieNode.appendCardList(cardSeq2)
+    assertEquals(2, rootTrieNode.getLeaves.size)
+    assertEquals(12, rootTrieNode.getLeaves.head.cardNumberPlayed)
+    assert(rootTrieNode.getLeaves.map(t => t.getPlayOrderAsShortString).contains("ThreeC,FiveD,JackC,FourS,KingS,AceS,JackC,ThreeS,ThreeH,FiveH,JackH,FourD"))
+    assert(rootTrieNode.getLeaves.map(t => t.getPlayOrderAsShortString).contains("ThreeC,FiveD,JackC,FourS,KingS,AceS,FiveC,ThreeS,ThreeH,FiveH,JackH,FourD"))
+  }
+
+  @Test
   def UnfinishedTrickOutputShouldReturnListOfTrieNodesCorrespondingToTheCurrentUnfinishedTrick(): Unit = {
     val cardSeq = List[Card](
       Card(Suit.C, Pip.Three), // N
