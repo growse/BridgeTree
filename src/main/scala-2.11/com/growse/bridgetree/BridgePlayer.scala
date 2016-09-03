@@ -79,7 +79,7 @@ class BridgePlayer(cards: mutable.LinkedHashSet[Card], trumpSuit: Suit = null) e
       })
     } else {
       assert(parentTrieNode.getPlayOrder.size == cardsPerHand * Player.values.size)
-      logger.info(s"Final PlaySeq: ${parentTrieNode.toString}. Lead won ${parentTrieNode.getNSTricksWon}")
+      logger.info(s"Final PlaySeq: ${parentTrieNode.toString}. NS won ${parentTrieNode.getNSTricksWon}")
     }
   }
 
