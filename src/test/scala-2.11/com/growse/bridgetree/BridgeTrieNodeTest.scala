@@ -23,6 +23,28 @@ class BridgeTrieNodeTest {
     assertEquals("Card 1: ThreeC by North", firstNode.toString)
   }
 
+  @Test
+  def GettingTheRootTrieShouldReturnARootTrie(): Unit = {
+    val rootTrieNode = new BridgeTrieNode()
+    val cardSeq = List[Card](
+      Card(Suit.C, Pip.Three), // N
+      Card(Suit.D, Pip.Five), // E
+      Card(Suit.C, Pip.Jack), // S Win
+      Card(Suit.S, Pip.Four), // W
+
+      Card(Suit.S, Pip.King), // S
+      Card(Suit.S, Pip.Ace), // W Win
+      Card(Suit.C, Pip.Jack), // N
+      Card(Suit.S, Pip.Three), // E
+
+      Card(Suit.H, Pip.Three), // W
+      Card(Suit.H, Pip.Five), // N
+      Card(Suit.H, Pip.Jack), // E Win
+      Card(Suit.D, Pip.Four) // S
+    )
+    rootTrieNode.appendCardList(cardSeq)
+    assertEquals("Root node", rootTrieNode.getLeaves.head.getRoot.toString)
+  }
 
   @Test
   def AddingASingleCardNodeShouldGiveCorrectNodeProperties(): Unit = {
