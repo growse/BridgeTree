@@ -15,7 +15,7 @@ class CardsDecksAndPlayersTest {
   }
 
   @Test
-  def WestNextPlayerShouldGiveEast(): Unit = {
+  def WestNextPlayerShouldGiveNorth(): Unit = {
     assertEquals(Player.North, Player.NextPlayer(Player.West))
   }
 
