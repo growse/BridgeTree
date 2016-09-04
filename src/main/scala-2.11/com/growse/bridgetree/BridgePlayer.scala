@@ -82,5 +82,4 @@ class BridgePlayer(cards: mutable.LinkedHashSet[Card], trumpSuit: Suit = null) e
       logger.info(s"Final PlaySeq: ${parentTrieNode.toString}. NS won ${parentTrieNode.getNSTricksWon}")
     }
   }
-
 }

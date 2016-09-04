@@ -69,6 +69,9 @@ object Runner extends LazyLogging {
     logger.info(s"Best result for lead: ${bridgePlayer.rootTrieNode.getLeaves.last.toString}")
 
     logger.info(s"Legal play count: ${bridgePlayer.rootTrieNode.getLeaves.size}")
+
+    logger.info(s"North should play: ${bridgePlayer.rootTrieNode.getBestPlay.card.get} because that wins between ${bridgePlayer.rootTrieNode.getBestPlay.getMinMaxNSTricksWon} tricks.")
+
     logger.info(s"Done in $stopWatch")
   }
 

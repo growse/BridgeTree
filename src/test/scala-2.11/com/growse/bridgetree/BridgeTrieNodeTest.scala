@@ -1,8 +1,9 @@
 package com.growse.bridgetree
 
 import org.junit.Assert._
-
 import org.junit.Test
+
+import scala.collection.mutable
 
 /**
   * Created by andrew on 30/08/2016.
@@ -405,5 +406,41 @@ class BridgeTrieNodeTest {
     assertEquals(1, rootNode.getLeaves.size)
     assert(rootNode.getLeaves.head.trickWinner.isDefined)
     assertEquals(Player.South, rootNode.getLeaves.head.trickWinner.get)
+  }
+
+  @Test
+  def GetOptimalPlayMethodOfTrieNodeShouldProduceBestCardToPlay(): Unit = {
+    val cardList = mutable.LinkedHashSet[Card](
+      Card(Suit.H, Pip.Four),
+      Card(Suit.S, Pip.King),
+      Card(Suit.C, Pip.Ten),
+      Card(Suit.S, Pip.Three),
+      Card(Suit.C, Pip.King),
+      Card(Suit.D, Pip.Five),
+      Card(Suit.C, Pip.Jack),
+      Card(Suit.C, Pip.Nine)
+    )
+
+    val bridgePlayer = new BridgePlayer(cardList, null)
+    bridgePlayer.Play()
+    assertEquals(Card(Suit.S, Pip.King), bridgePlayer.rootTrieNode.getBestPlay.card.get)
+  }
+
+  @Test
+  def GetMinMaxNSWinnersFromTrieShouldGiveMinimumAndMaximumNumberOfNSTricksInAllChildren(): Unit = {
+    val cardList = mutable.LinkedHashSet[Card](
+      Card(Suit.H, Pip.Four),
+      Card(Suit.S, Pip.King),
+      Card(Suit.C, Pip.Ten),
+      Card(Suit.S, Pip.Three),
+      Card(Suit.C, Pip.King),
+      Card(Suit.D, Pip.Five),
+      Card(Suit.C, Pip.Jack),
+      Card(Suit.C, Pip.Nine)
+    )
+
+    val bridgePlayer = new BridgePlayer(cardList, Suit.S)
+    bridgePlayer.Play()
+    assertEquals((1, 2), bridgePlayer.rootTrieNode.getMinMaxNSTricksWon)
   }
 }

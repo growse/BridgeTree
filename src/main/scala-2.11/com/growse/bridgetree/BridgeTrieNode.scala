@@ -114,7 +114,7 @@ class BridgeTrieNode(val trumpSuit: Suit = null, val card: Option[Card] = None, 
     cardList.reverse.toList
   }
 
-  def getPlayOrderAsShortString:String={
+  def getPlayOrderAsShortString: String = {
     getPlayOrder.mkString(",")
   }
 
@@ -187,5 +187,39 @@ class BridgeTrieNode(val trumpSuit: Suit = null, val card: Option[Card] = None, 
       }
       newNode.appendCardList(cardList.drop(1))
     }
+  }
+
+  def getMinMaxNSTricksWon: (Int, Int) = {
+    val mapped = getLeaves
+      .map(node => node.getNSTricksWon)
+    (mapped.min, mapped.max)
+
+  }
+
+  def getBestPlay: BridgeTrieNode = {//TODO return bottom card and play
+    var ret: BridgeTrieNode = null
+    if (this.getNextPlayer == Player.North || this.getNextPlayer == Player.South) {
+      ret = this.getLeaves.reduce((cur, best) => {
+        if (cur.getNSTricksWon > best.getNSTricksWon) {
+          cur
+        } else {
+          best
+        }
+      })
+
+    } else {
+      ret = this.getLeaves.reduce((cur, best) => {
+        if (cur.getNSTricksWon < best.getNSTricksWon) {
+          cur
+        } else {
+          best
+        }
+      })
+
+    }
+    while (ret.parent.get != this) {
+      ret = ret.parent.get
+    }
+    ret
   }
 }
