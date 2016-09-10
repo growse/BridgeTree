@@ -74,8 +74,9 @@ class BridgePlayerTest {
     val bridgeTree = new BridgePlayer(startingDeck)
     bridgeTree.Play()
 
-    assertEquals(1, bridgeTree.rootTrieNode.getLeaves.head.getNSTricksWon)
-    assertEquals(2, bridgeTree.rootTrieNode.getLeaves.last.getNSTricksWon)
+    assertEquals(10,bridgeTree.rootTrieNode.getLeaves.size)
+    assertEquals(1, bridgeTree.rootTrieNode.getLeaves.map(t => t.getNSTricksWon).min)
+    assertEquals(2, bridgeTree.rootTrieNode.getLeaves.map(t => t.getNSTricksWon).max)
   }
 
 }

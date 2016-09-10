@@ -408,26 +408,65 @@ class BridgeTrieNodeTest {
     assertEquals(Player.South, rootNode.getLeaves.head.trickWinner.get)
   }
 
+  /*
+    @Test
+    def GetOptimalPlayMethodOfTrieNodeShouldProduceBestCardToPlay(): Unit = {
+      val cardList = mutable.LinkedHashSet[Card](
+        Card(Suit.H, Pip.Four),
+        Card(Suit.S, Pip.King),
+        Card(Suit.C, Pip.Ten),
+        Card(Suit.S, Pip.Three),
+        Card(Suit.C, Pip.King),
+        Card(Suit.D, Pip.Five),
+        Card(Suit.C, Pip.Jack),
+        Card(Suit.C, Pip.Nine)
+      )
+
+      val bridgePlayer = new BridgePlayer(cardList, null)
+      bridgePlayer.Play()
+      var bestPlay = bridgePlayer.rootTrieNode.getBestPlay
+      while (bestPlay.parent.isDefined&&bestPlay.parent.get.card.isDefined) {
+        bestPlay=bestPlay.parent.get
+      }
+      assertEquals(Card(Suit.S, Pip.King), bestPlay.card.get)
+    }
+
+    @Test
+    def GetMinMaxNSWinnersFromTrieShouldGiveMinimumAndMaximumNumberOfNSTricksInAllChildren(): Unit = {
+      val cardList = mutable.LinkedHashSet[Card](
+        Card(Suit.H, Pip.Four),
+        Card(Suit.S, Pip.King),
+        Card(Suit.C, Pip.Ten),
+        Card(Suit.S, Pip.Three),
+        Card(Suit.C, Pip.King),
+        Card(Suit.D, Pip.Five),
+        Card(Suit.C, Pip.Jack),
+        Card(Suit.C, Pip.Nine)
+      )
+
+      val bridgePlayer = new BridgePlayer(cardList, Suit.S)
+      bridgePlayer.Play()
+      assertEquals((1, 2), bridgePlayer.rootTrieNode.getMinMaxNSTricksWon)
+    }*/
+
   @Test
-  def GetOptimalPlayMethodOfTrieNodeShouldProduceBestCardToPlay(): Unit = {
+  def SimpleOptimizeTest(): Unit = {
     val cardList = mutable.LinkedHashSet[Card](
       Card(Suit.H, Pip.Four),
       Card(Suit.S, Pip.King),
       Card(Suit.C, Pip.Ten),
-      Card(Suit.S, Pip.Three),
-      Card(Suit.C, Pip.King),
-      Card(Suit.D, Pip.Five),
-      Card(Suit.C, Pip.Jack),
-      Card(Suit.C, Pip.Nine)
+      Card(Suit.S, Pip.Three)
     )
 
-    val bridgePlayer = new BridgePlayer(cardList, null)
+    val bridgePlayer = new BridgePlayer(cardList, Suit.S)
     bridgePlayer.Play()
-    assertEquals(Card(Suit.S, Pip.King), bridgePlayer.rootTrieNode.getBestPlay.card.get)
+    bridgePlayer.rootTrieNode.optimizeTree()
+    assertEquals(0, bridgePlayer.rootTrieNode.expectedTricksWon.get)
   }
 
+
   @Test
-  def GetMinMaxNSWinnersFromTrieShouldGiveMinimumAndMaximumNumberOfNSTricksInAllChildren(): Unit = {
+  def ErrTheOptimizeTreeThingieShouldWork(): Unit = {
     val cardList = mutable.LinkedHashSet[Card](
       Card(Suit.H, Pip.Four),
       Card(Suit.S, Pip.King),
@@ -441,6 +480,8 @@ class BridgeTrieNodeTest {
 
     val bridgePlayer = new BridgePlayer(cardList, Suit.S)
     bridgePlayer.Play()
-    assertEquals((1, 2), bridgePlayer.rootTrieNode.getMinMaxNSTricksWon)
+    bridgePlayer.rootTrieNode.optimizeTree()
+    assertEquals(2, bridgePlayer.rootTrieNode.expectedTricksWon.get)
+    assertEquals("", bridgePlayer.rootTrieNode.optimalLeaves.get.head.getPlayOrderAsShortString)
   }
 }

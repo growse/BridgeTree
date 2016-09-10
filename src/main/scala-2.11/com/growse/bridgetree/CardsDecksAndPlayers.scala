@@ -44,6 +44,10 @@ object Player extends Enumeration {
   def NextPlayer(player: Player): Player = {
     Player((player.id + 1) % this.values.size)
   }
+
+  def Partner(player: Player): Player = {
+    Player((player.id + 2) % this.values.size)
+  }
 }
 
 class Deck private(val cards: List[Card]) {

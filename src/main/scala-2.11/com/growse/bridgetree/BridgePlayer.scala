@@ -4,6 +4,7 @@ import com.growse.bridgetree.Player.Player
 import com.growse.bridgetree.Suit.Suit
 import com.typesafe.scalalogging.LazyLogging
 
+import scala.collection.parallel.mutable.ParMap
 import scala.collection.{SortedSet, mutable}
 
 class BridgePlayer(cards: mutable.LinkedHashSet[Card], trumpSuit: Suit = null) extends LazyLogging {
@@ -79,7 +80,7 @@ class BridgePlayer(cards: mutable.LinkedHashSet[Card], trumpSuit: Suit = null) e
       })
     } else {
       assert(parentTrieNode.getPlayOrder.size == cardsPerHand * Player.values.size)
-      logger.info(s"Final PlaySeq: ${parentTrieNode.toString}. NS won ${parentTrieNode.getNSTricksWon}")
+      logger.debug(s"Final PlaySeq: ${parentTrieNode.toString}. NS won ${parentTrieNode.getNSTricksWon}")
     }
   }
 }

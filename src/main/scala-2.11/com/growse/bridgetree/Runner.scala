@@ -65,14 +65,11 @@ object Runner extends LazyLogging {
     bridgePlayer.Play()
     stopWatch.stop()
 
-    logger.info(s"Worst result for lead: ${bridgePlayer.rootTrieNode.getLeaves.head.toString}")
-    logger.info(s"Best result for lead: ${bridgePlayer.rootTrieNode.getLeaves.last.toString}")
-
+    logger.info(s"Done in $stopWatch")
     logger.info(s"Legal play count: ${bridgePlayer.rootTrieNode.getLeaves.size}")
 
-    logger.info(s"North should play: ${bridgePlayer.rootTrieNode.getBestPlay.card.get} because that wins between ${bridgePlayer.rootTrieNode.getBestPlay.getMinMaxNSTricksWon} tricks.")
+    //logger.info(s"North should play: ${bridgePlayer.rootTrieNode.getBestPlay.card.get} because that wins between ${bridgePlayer.rootTrieNode.getBestPlay.getMinMaxNSTricksWon} tricks.")
 
-    logger.info(s"Done in $stopWatch")
   }
 
   def getCards(conf: Conf): mutable.LinkedHashSet[Card] = {
