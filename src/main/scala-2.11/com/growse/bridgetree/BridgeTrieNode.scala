@@ -3,6 +3,8 @@ package com.growse.bridgetree
 
 import com.growse.bridgetree.Player.Player
 import com.growse.bridgetree.Suit.Suit
+import com.typesafe.scalalogging.LazyLogging
+import org.slf4j.MarkerFactory
 
 import scala.annotation.tailrec
 import scala.collection.mutable
@@ -11,7 +13,7 @@ import scala.collection.mutable.ArrayBuffer
 /**
   * Created by andrew on 27/08/2016.
   */
-class BridgeTrieNode(val trumpSuit: Suit = null, val card: Option[Card] = None, val parent: Option[BridgeTrieNode] = None, val player: Option[Player] = None) extends Ordered[BridgeTrieNode] {
+class BridgeTrieNode(val trumpSuit: Suit = null, val card: Option[Card] = None, val parent: Option[BridgeTrieNode] = None, val player: Option[Player] = None) extends Ordered[BridgeTrieNode] with LazyLogging {
 
   val cardNumberPlayed = this.getCardNumberPlayed
   var trickWinner: Option[Player] = None
@@ -24,7 +26,7 @@ class BridgeTrieNode(val trumpSuit: Suit = null, val card: Option[Card] = None, 
     var node = this
     var counter = 0
     while (node.parent.isDefined) {
-      if (node.getThisUnfinisedTrick.isEmpty) {
+      if (node.getThisUnfinishedTrick.isEmpty) {
         if (node.trickWinner.isDefined && (node.trickWinner.get == Player.North || node.trickWinner.get == Player.South)) {
           counter += 1
         }
@@ -35,7 +37,7 @@ class BridgeTrieNode(val trumpSuit: Suit = null, val card: Option[Card] = None, 
   }
 
   def getNextPlayer: Player = {
-    if (getThisUnfinisedTrick.isEmpty && this.parent.isDefined) {
+    if (getThisUnfinishedTrick.isEmpty && this.parent.isDefined) {
       return this.getLastTrickWinner.get
     } else {
       if (player.isDefined) {
@@ -82,7 +84,7 @@ class BridgeTrieNode(val trumpSuit: Suit = null, val card: Option[Card] = None, 
     Some(cards.reverse.toList)
   }
 
-  def getThisUnfinisedTrick: Option[List[BridgeTrieNode]] = {
+  def getThisUnfinishedTrick: Option[List[BridgeTrieNode]] = {
     var node = this
     if (node.cardNumberPlayed % 4 == 0) {
       return None
@@ -192,65 +194,58 @@ class BridgeTrieNode(val trumpSuit: Suit = null, val card: Option[Card] = None, 
 
   var expectedTricksWon: Option[Int] = None
 
-  var optimalLeaves: Option[Seq[BridgeTrieNode]] = None
+  var optimalChildren: Option[Seq[BridgeTrieNode]] = None
+
+  def optimalLeaf:BridgeTrieNode={
+    var node=this
+    while (node.optimalChildren.isDefined) {
+      node=node.optimalChildren.get.head
+    }
+    node
+  }
 
   def optimizeTree(): Unit = {
+    if (this.expectedTricksWon.isDefined) {
+      return
+    }
     if (this.children.nonEmpty) {
       // Are we a non leaf?
+      logger.debug(s"${this} is Not a leaf node, optimizing children")
       this.children.foreach(node => node.optimizeTree()) // Optimize every child
     }
+    logger.debug(s"Card: ${this.cardNumberPlayed} - ${this.player} - ${this.card}")
     if (this.parent.isDefined) {
       //We're not root
       if (this.children.isEmpty) {
+
         // We're a leaf. The expected tricks won is whoever won this trick
         this.expectedTricksWon = if (this.trickWinner.get == this.player.get || this.trickWinner.get == Player.Partner(this.player.get)) Some(1) else Some(0)
+        logger.debug(s"We're a leaf node. ${this.player.get} played ${this.card.get} and can expect to win $expectedTricksWon. This trick was won by ${this.getLastTrickWinner.get}. ${this.getLastTrick.get}")
       } else {
         val totalTricksLeft = math.ceil((this.getLeaves.head.cardNumberPlayed.toDouble - this.cardNumberPlayed) / 4).toInt
         // If we've optimized all the children
-        val smallestNumberOfExpectedTricksWonInChildren = this.children.minBy(node => node.expectedTricksWon.get).expectedTricksWon.get
-        this.optimalLeaves = Some(this.children.filter(node => node.expectedTricksWon.get == smallestNumberOfExpectedTricksWonInChildren))
-        this.expectedTricksWon = Some(totalTricksLeft - smallestNumberOfExpectedTricksWonInChildren)
+        val largestNumberOfExpectedTricksWonInChildren = this.children.maxBy(node => node.expectedTricksWon.get).expectedTricksWon.get
+        this.optimalChildren = Some(this.children.filter(node => node.expectedTricksWon.get == largestNumberOfExpectedTricksWonInChildren))
+        this.expectedTricksWon = Some(totalTricksLeft - largestNumberOfExpectedTricksWonInChildren)
+        logger.debug(s"The next player is ${this.children.head.player} and can play ${this.children.size} cards. Best result for them is to win $largestNumberOfExpectedTricksWonInChildren")
+        logger.debug(s"${this.player.get} played ${this.card.get}. Can expect to win $expectedTricksWon.")
 
         // If we're the 4th in a trick, we know the winner. Add one to the expectedTricksWon if we won it
+        if (this.trickWinner.isDefined) {
+          logger.debug(s"Fourth card, trick won by ${this.getLastTrickWinner.get}: ${this.getLastTrick.get}")
+        }
         if (this.trickWinner.isDefined && (this.trickWinner.get == this.player.get || this.trickWinner.get == Player.Partner(this.player.get))) {
-          this.expectedTricksWon = Some(this.expectedTricksWon.get + 1)
+          //logger.debug(s"Adding one to expected total as 4th card partnership won the trick")
+          //this.expectedTricksWon = Some(this.expectedTricksWon.get + 1)
         }
       }
     } else {
       //North is the first to play.
       this.expectedTricksWon = Some(this.children.maxBy(node => node.expectedTricksWon.get).expectedTricksWon.get)
-      this.optimalLeaves = Some(this.children.filter(node => node.expectedTricksWon.get == this.expectedTricksWon.get))
+      this.optimalChildren = Some(this.children.filter(node => node.expectedTricksWon.get == this.expectedTricksWon.get))
     }
   }
 
 
   def BridgeTrieOrderingByExpectedTricksWon: Ordering[BridgeTrieNode] = Ordering.by(_.expectedTricksWon)
-
-
-  /*def getBestPlay: BridgeTrieNode = {
-    var bestLeadCard: BridgeTrieNode = null
-    if (this.getNextPlayer == Player.North || this.getNextPlayer == Player.South) {
-      bestLeadCard = this.getLeaves.reduce((cur, best) => {
-        if (cur.getNSTricksWon > best.getNSTricksWon) {
-          cur
-        } else {
-          best
-        }
-      })
-
-    } else {
-      bestLeadCard = this.getLeaves.reduce((cur, best) => {
-        if (cur.getNSTricksWon < best.getNSTricksWon) {
-          cur
-        } else {
-          best
-        }
-      })
-
-    }
-    while (bestLeadCard.parent.isDefined && bestLeadCard.parent.get.card.isDefined) {
-      bestLeadCard=bestLeadCard.parent.get
-    }
-    bestLeadCard
-  }*/
 }

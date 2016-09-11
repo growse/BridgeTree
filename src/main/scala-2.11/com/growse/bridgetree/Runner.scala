@@ -41,12 +41,10 @@ object Runner extends LazyLogging {
   def main(args: Array[String]): Unit = {
     val conf = new Conf(args)
 
-    if (conf.verbose.getOrElse(false)) {
-      LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME)
-        .asInstanceOf[Logger].setLevel(Level.DEBUG)
-    } else {
-      LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME)
-        .asInstanceOf[Logger].setLevel(Level.INFO)
+    LoggerFactory.getLogger(this.getClass) match {
+      case logbackLogger: Logger =>
+        logbackLogger.setLevel(if (conf.verbose.getOrElse(false)) Level.DEBUG else Level.INFO)
+      case _ =>
     }
 
     val cards: mutable.LinkedHashSet[Card] = getCards(conf)
@@ -67,8 +65,11 @@ object Runner extends LazyLogging {
 
     logger.info(s"Done in $stopWatch")
     logger.info(s"Legal play count: ${bridgePlayer.rootTrieNode.getLeaves.size}")
+    bridgePlayer.rootTrieNode.optimizeTree()
 
-    //logger.info(s"North should play: ${bridgePlayer.rootTrieNode.getBestPlay.card.get} because that wins between ${bridgePlayer.rootTrieNode.getBestPlay.getMinMaxNSTricksWon} tricks.")
+    logger.info(s"North should play: ${bridgePlayer.rootTrieNode.optimalChildren.get.head.getPlayOrderAsShortString} because that wins ${bridgePlayer.rootTrieNode.expectedTricksWon.get} tricks.")
+
+    logger.info(s"One optimal play is ${bridgePlayer.rootTrieNode.optimalLeaf.getPlayOrderAsShortString}")
 
   }
 

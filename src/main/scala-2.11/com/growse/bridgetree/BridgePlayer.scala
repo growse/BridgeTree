@@ -54,7 +54,7 @@ class BridgePlayer(cards: mutable.LinkedHashSet[Card], trumpSuit: Suit = null) e
   def PlayCard(hands: mutable.Map[Player, SortedSet[Card]], playerToPlay: Player, recursionLevel: Int, parentTrieNode: BridgeTrieNode): Unit = {
     val actualPlayerToPlay = parentTrieNode.getNextPlayer
     // Work out if were starting a new trick and if so, who won the last one.
-    if (parentTrieNode.getLastTrick.isDefined && parentTrieNode.getThisUnfinisedTrick.isEmpty) {
+    if (parentTrieNode.getLastTrick.isDefined && parentTrieNode.getThisUnfinishedTrick.isEmpty) {
       logger.debug(s"Looks like Player $actualPlayerToPlay won the last trick: ${parentTrieNode.getLastTrick.get}")
     }
     if (hands(actualPlayerToPlay).nonEmpty) {
@@ -62,8 +62,8 @@ class BridgePlayer(cards: mutable.LinkedHashSet[Card], trumpSuit: Suit = null) e
         logger.debug(s"Seeing if player $actualPlayerToPlay can play $card ($recursionLevel)")
         if (
           parentTrieNode.cardNumberPlayed % 4 == 0 // We're the first to play this trick
-            || !hands(actualPlayerToPlay).exists(card => card.suit == parentTrieNode.getThisUnfinisedTrick.get.head.card.get.suit) // We can't follow suit
-            || parentTrieNode.getThisUnfinisedTrick.get.head.card.get.suit == card.suit // We can follow suit, and this card follows suit
+            || !hands(actualPlayerToPlay).exists(card => card.suit == parentTrieNode.getThisUnfinishedTrick.get.head.card.get.suit) // We can't follow suit
+            || parentTrieNode.getThisUnfinishedTrick.get.head.card.get.suit == card.suit // We can follow suit, and this card follows suit
         ) {
           //Play the card
           logger.debug(s"Player $actualPlayerToPlay plays $card")
