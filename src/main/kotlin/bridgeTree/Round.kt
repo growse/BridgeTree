@@ -40,7 +40,6 @@ class Round(val players: Array<Player>, private val trumpSuit: Suit? = null) {
     }
 
     fun getTricksWon(place1: Place, place2: Place): Int {
-        val parp = tricks.count { trick -> trick.getWinningCard(trumpSuit).player.place == place1 || trick.getWinningCard(trumpSuit).player.place == place2 }
-        return parp
+        return tricks.count { trick -> trick.getWinningCard(trumpSuit).player.place == place1 || trick.getWinningCard(trumpSuit).player.place == place2 }
     }
 }

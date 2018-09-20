@@ -13,7 +13,7 @@ class HandTest {
                 Card(Suit.CLUBS, Pip.ACE)
         ))
         assertEquals(4, hand.size)
-        assertEquals("[AC, 5D, 2S, 8S]", hand.toString())
+        assertEquals("CLUBS[A],DIAMONDS[5],HEARTS[],SPADES[2, 8]", hand.toString())
     }
 
 
