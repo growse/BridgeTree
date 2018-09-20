@@ -15,13 +15,18 @@ class Round(val players: Array<Player>, private val trumpSuit: Suit? = null) {
             logger.info { "$player has ${player.hand}" }
         }
 
+        logger.info { "${players[1]} is dummy" }
+        val dummyPlayer = players[1]
+
+        dummyPlayer.setDelegate(players[3])
+
         var leadIndex = 0
 
         for (trickNumber: Int in 1..13) {
             val trick = Trick()
             for (i: Int in 0..3) {
                 val thisPlayer = players[(i + leadIndex) % 4]
-                val playedCard = thisPlayer.playCard(trick)
+                val playedCard = thisPlayer.playCard(trick, trumpSuit, dummyPlayer.hand)
                 if (
                         trick.getPlayedCards()[0] != null &&
                         playedCard.suit != trick.getPlayedCards()[0]!!.card.suit &&

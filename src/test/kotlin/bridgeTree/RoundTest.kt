@@ -11,8 +11,8 @@ class RoundTest {
     fun simpleNotrumpsRoundShouldPlay() {
         val random = Random(1L)
 
-        val deck = Deck().shuffle(random)
-        val players = arrayOf(Player(Place.NORTH, deck.getHand()), Player(Place.EAST, deck.getHand()), Player(Place.SOUTH, deck.getHand()), Player(Place.WEST, deck.getHand()))
+        val hands = Deck().shuffle(random).deal()
+        val players = arrayOf(Player(Place.NORTH, hands[0]), Player(Place.EAST, hands[1]), Player(Place.SOUTH, hands[2]), Player(Place.WEST, hands[3]))
 
         val round = Round(players = players)
         assertEquals(5, round.getTricksWon(Place.NORTH, Place.SOUTH))
@@ -23,8 +23,8 @@ class RoundTest {
     fun simpleTrumpsRoundShouldPlay() {
         val random = Random(1L)
 
-        val deck = Deck().shuffle(random)
-        val players = arrayOf(Player(Place.NORTH, deck.getHand()), Player(Place.EAST, deck.getHand()), Player(Place.SOUTH, deck.getHand()), Player(Place.WEST, deck.getHand()))
+        val hands = Deck().shuffle(random).deal()
+        val players = arrayOf(Player(Place.NORTH, hands[0]), Player(Place.EAST, hands[1]), Player(Place.SOUTH, hands[2]), Player(Place.WEST, hands[3]))
 
         val round = Round(players = players, trumpSuit = Suit.DIAMONDS)
         assertEquals(7, round.getTricksWon(Place.NORTH, Place.SOUTH))
@@ -34,17 +34,15 @@ class RoundTest {
     @Test
     fun exceptionShouldBeThrownIfPlayerBreaksTheRules() {
         val random = Random(1L)
-        val deck = Deck().shuffle(random)
-        val players = arrayOf(Player(Place.NORTH, deck.getHand()), RuleBreakingPlayer(Place.EAST, deck.getHand()), Player(Place.SOUTH, deck.getHand()), Player(Place.WEST, deck.getHand()))
+        val hands = Deck().shuffle(random).deal()
+        val players = arrayOf(Player(Place.NORTH, hands[0]), Player(Place.EAST, hands[1]), Player(Place.SOUTH, hands[2], listOf(RuleBreakingStrategy())), Player(Place.WEST, hands[3]))
         assertThrows(PlayerDidntFollowSuitException::class.java) { Round(players = players) }
 
     }
 }
 
-class RuleBreakingPlayer(place: Place, hand: Hand) : Player(place, hand) {
-    override fun playCard(trick: Trick, trumpSuit: Suit?): Card {
-        return hand.removeAt(hand.size - 1)
-
+class RuleBreakingStrategy : PlayerStrategy {
+    override fun suggestCard(hand: Hand, trick: Trick, tricksSoFar: List<Trick>?, trumpSuit: Suit?, dummyHand: Hand): Card {
+        return hand.first()
     }
-
 }

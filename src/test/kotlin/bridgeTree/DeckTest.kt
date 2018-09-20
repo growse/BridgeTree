@@ -2,6 +2,7 @@ package bridgeTree
 
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class DeckTest {
@@ -14,7 +15,15 @@ class DeckTest {
     @Test
     fun newDeckShouldBeInOrder() {
         val deck = Deck()
-        assertEquals(Card(Suit.SPADES, Pip.ACE), deck.pop())
+        var prevCard: Card? = null
+        for (card: Card in deck) {
+            if (prevCard == null) {
+                continue
+            }
+            assertTrue(card > prevCard)
+            prevCard = card
+        }
+
     }
 
     @Test
@@ -42,10 +51,10 @@ class DeckTest {
 
     @Test
     fun deckShouldDeal13Cards() {
-        val deck = Deck().shuffle()
-        assertEquals(13, deck.getHand().size)
-        assertEquals(13, deck.getHand().size)
-        assertEquals(13, deck.getHand().size)
-        assertEquals(13, deck.getHand().size)
+        val hands = Deck().shuffle().deal()
+        assertEquals(13, hands[0].size)
+        assertEquals(13, hands[1].size)
+        assertEquals(13, hands[2].size)
+        assertEquals(13, hands[3].size)
     }
 }

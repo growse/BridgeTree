@@ -1,7 +1,6 @@
 package bridgeTree
 
 import java.util.*
-import kotlin.collections.ArrayList
 
 class Deck(startingCards: List<Card>? = null) : Stack<Card>() {
 
@@ -18,19 +17,20 @@ class Deck(startingCards: List<Card>? = null) : Stack<Card>() {
 
     }
 
-    fun getHand(numberOfPlayers: Int = 4): Hand {
-        val cards = ArrayList<Card>(this.size / numberOfPlayers)
-        for (i: Int in 1..(Card.totalNumberOfCards() / numberOfPlayers)) {
-            cards.add(this.pop())
-        }
-        return Hand(cards)
-    }
-
     fun shuffle(random: Random? = null): Deck {
         if (random != null) {
             return Deck(this.shuffled(random))
         } else {
             return Deck(this.shuffled())
         }
+    }
+
+    private fun pop(i: Int): List<Card> {
+        return (1..i).map { this.pop() }
+    }
+
+    fun deal(): List<Hand> {
+        return (0..3).map { Hand(this.pop(13)) }
+
     }
 }
