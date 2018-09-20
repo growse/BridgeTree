@@ -3,8 +3,7 @@ package bridgeTree
 import java.util.*
 import kotlin.collections.ArrayList
 
-class Deck(startingCards: List<Card>?) : Stack<Card>() {
-    constructor() : this(null)
+class Deck(startingCards: List<Card>? = null) : Stack<Card>() {
 
     init {
         if (startingCards == null) {
