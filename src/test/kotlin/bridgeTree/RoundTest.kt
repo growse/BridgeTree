@@ -8,7 +8,7 @@ import java.util.*
 
 class RoundTest {
     @Test
-    fun SimpleRoundShouldPlay() {
+    fun simpleNotrumpsRoundShouldPlay() {
         val random = Random(1L)
 
         val deck = Deck().shuffle(random)
@@ -20,7 +20,19 @@ class RoundTest {
     }
 
     @Test
-    fun ExceptionShouldBeThrownIfPlayerBreaksTheRules() {
+    fun simpleTrumpsRoundShouldPlay() {
+        val random = Random(1L)
+
+        val deck = Deck().shuffle(random)
+        val players = arrayOf(Player(Place.NORTH, deck.getHand()), Player(Place.EAST, deck.getHand()), Player(Place.SOUTH, deck.getHand()), Player(Place.WEST, deck.getHand()))
+
+        val round = Round(players = players, trumpSuit = Suit.DIAMONDS)
+        assertEquals(7, round.getTricksWon(Place.NORTH, Place.SOUTH))
+        assertEquals(6, round.getTricksWon(Place.EAST, Place.WEST))
+    }
+
+    @Test
+    fun exceptionShouldBeThrownIfPlayerBreaksTheRules() {
         val random = Random(1L)
         val deck = Deck().shuffle(random)
         val players = arrayOf(Player(Place.NORTH, deck.getHand()), RuleBreakingPlayer(Place.EAST, deck.getHand()), Player(Place.SOUTH, deck.getHand()), Player(Place.WEST, deck.getHand()))

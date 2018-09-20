@@ -1,3 +1,3 @@
 package bridgeTree
 
-class IncompleteHandException : Throwable()
+class IncompleteHandException : Exception()
