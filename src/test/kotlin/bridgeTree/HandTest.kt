@@ -40,6 +40,6 @@ class HandTest {
                 Card(Suit.CLUBS, Pip.ACE)
         ))
         val testCard = Card(Suit.SPADES, Pip.ACE)
-        val newHand = hand.removeCard(testCard)
+        hand.removeCard(testCard)
     }
 }

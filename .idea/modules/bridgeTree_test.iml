@@ -6,12 +6,19 @@
         <compilerSettings />
         <compilerArguments>
           <option name="destination" value="$MODULE_DIR$/../../build/classes/kotlin/test" />
+          <option name="classpath" value="$MODULE_DIR$/../../build/classes/kotlin/main:/home/growse/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.2.71/5470d1f752cd342edb77e1062bac07e838d2cea4/kotlin-stdlib-jdk8-1.2.71.jar:/home/growse/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/22.0/3564ef3803de51fb0530a8377ec6100b33b0d073/guava-22.0.jar:/home/growse/.gradle/caches/modules-2/files-2.1/io.github.microutils/kotlin-logging/1.6.10/c1d7b05c311c60df1b66017ff3ebec80e417e97d/kotlin-logging-1.6.10.jar:/home/growse/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-simple/1.6.2/95bfd2d7c46bca76886989fcbb1d1b58dfbfd0a6/slf4j-simple-1.6.2.jar:/home/growse/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-params/5.0.0/a8d7edfbfbc0a7deaf59167db5c0e750222e8fb2/junit-jupiter-params-5.0.0.jar:/home/growse/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.0.0/f7fe1b74bef74d640493781abecafba191472ad/junit-jupiter-api-5.0.0.jar:/home/growse/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.2.71/4ce93f539e2133f172f1167291a911f83400a5d0/kotlin-stdlib-jdk7-1.2.71.jar:/home/growse/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.2.71/d9717625bb3c731561251f8dd2c67a1011d6764c/kotlin-stdlib-1.2.71.jar:/home/growse/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/1.3.9/40719ea6961c0cb6afaeb6a921eaa1f6afd4cfdf/jsr305-1.3.9.jar:/home/growse/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_annotations/2.0.18/5f65affce1684999e2f4024983835efc3504012e/error_prone_annotations-2.0.18.jar:/home/growse/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.1/ed28ded51a8b1c6b112568def5f4b455e6809019/j2objc-annotations-1.1.jar:/home/growse/.gradle/caches/modules-2/files-2.1/org.codehaus.mojo/animal-sniffer-annotations/1.14/775b7e22fb10026eed3f86e8dc556dfafe35f2d5/animal-sniffer-annotations-1.14.jar:/home/growse/.gradle/caches/modules-2/files-2.1/io.github.microutils/kotlin-logging-common/1.6.10/98507484fee3491b386684a0d7be18a0be499e9d/kotlin-logging-common-1.6.10.jar:/home/growse/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.25/da76ca59f6a57ee3102f8f9bd9cee742973efa8a/slf4j-api-1.7.25.jar:/home/growse/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.0.0/d2e03d9b21020746d48fe45834ff7d71fbcbd7b2/junit-platform-commons-1.0.0.jar:/home/growse/.gradle/caches/modules-2/files-2.1/org.apiguardian/apiguardian-api/1.0.0/3ef5276905e36f4d8055fe3cb0bdcc7503ffc85d/apiguardian-api-1.0.0.jar:/home/growse/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.0.0/6f09c598e9ff64bf0ce2fa7e7de49a99ba83c0b4/opentest4j-1.0.0.jar:/home/growse/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.2.71/ba18ca1aa0e40eb6f1865b324af2f4cbb691c1ec/kotlin-stdlib-common-1.2.71.jar:/home/growse/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/13.0/919f0dfe192fb4e063e7dacadee7f8bb9a2672a9/annotations-13.0.jar" />
           <option name="noStdlib" value="true" />
           <option name="noReflect" value="true" />
           <option name="moduleName" value="bridgeTree" />
           <option name="jvmTarget" value="1.8" />
           <option name="addCompilerBuiltIns" value="true" />
           <option name="loadBuiltInsFromDependencies" value="true" />
+          <option name="friendPaths">
+            <array>
+              <option value="$MODULE_DIR$/../../build/classes/kotlin/main" />
+              <option value="$MODULE_DIR$/../../build/classes/java/main" />
+            </array>
+          </option>
           <option name="languageVersion" value="1.2" />
           <option name="apiVersion" value="1.2" />
           <option name="pluginOptions">

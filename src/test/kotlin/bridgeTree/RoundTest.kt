@@ -39,10 +39,11 @@ class RoundTest {
         assertThrows(PlayerDidntFollowSuitException::class.java) { Round(players = players) }
 
     }
+
+
 }
 
-class RuleBreakingStrategy : PlayerStrategy {
-    override fun suggestCard(hand: Hand, trick: Trick, tricksSoFar: List<Trick>?, trumpSuit: Suit?, dummyHand: Hand): Card {
-        return hand.first()
-    }
+class RuleBreakingStrategy : PlayerStrategy() {
+    override val decisionTree: Tree
+        get() = Tree.Leaf(playLowestCardInHand)
 }
